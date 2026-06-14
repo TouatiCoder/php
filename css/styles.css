@@ -1,0 +1,143 @@
+:root {
+  color-scheme: light;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+[data-motion] {
+  opacity: 0;
+  transform: translateY(var(--motion-y, 20px));
+  transition:
+    opacity var(--motion-duration, 0.8s) cubic-bezier(0.16, 1, 0.3, 1) var(--motion-delay, 0s),
+    transform var(--motion-duration, 0.8s) cubic-bezier(0.16, 1, 0.3, 1) var(--motion-delay, 0s);
+  will-change: opacity, transform;
+}
+
+[data-motion].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-motion="fade"] {
+  transform: none;
+}
+
+[data-progress] {
+  width: 0;
+  transition:
+    width 1.4s cubic-bezier(0.16, 1, 0.3, 1) var(--progress-delay, 0s);
+}
+
+[data-progress].is-visible {
+  width: var(--progress-width, 0%);
+}
+
+[data-hero-bg],
+[data-future-bg] {
+  transform-origin: center;
+  will-change: transform;
+}
+
+[data-hero-content] {
+  will-change: opacity;
+}
+
+html[dir="rtl"] select {
+  direction: rtl;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  [data-motion],
+  [data-progress],
+  [data-hero-bg],
+  [data-future-bg],
+  [data-hero-content] {
+    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.product-card {
+  position: relative;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.product-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 54px;
+  height: 54px;
+  pointer-events: none;
+  background-image: url("../assets/images/desing.png");
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: contain;
+}
+.product-card__image,
+.product-card__body {
+  position: relative;
+  z-index: 2;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 46px rgba(12, 52, 44, 0.12);
+}
+
+.product-card:active,
+.product-card.product-card-clicked {
+  transform: scale(0.98);
+}
+
+.product-card-link-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.product-card .w-12.h-12 {
+  transition: transform 220ms ease, background-color 220ms ease;
+}
+
+.product-card:hover .w-12.h-12 {
+  transform: translateX(2px);
+}
+
+.page-transition-out {
+  animation: page-fade-out 180ms ease forwards;
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.15;
+    transform: scale(0.995);
+  }
+}
+
+/* ── Marquee / ticker band ── */
+/* ── Marquee animation ── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+  /* ← Change 25s to control speed */
+}
