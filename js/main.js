@@ -184,13 +184,20 @@
 
   function assetUrl(key) {
     const base = isNestedPage() ? "../assets/images" : "assets/images";
-    if (String(key || '').includes('assets/images/')) {
-      return String(key).replace('assets/images/', `${base}/`);
+    const value = String(key || '');
+    if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('//')) {
+      return value;
     }
-    if (imageNames[key]) {
-      return `${base}/${imageNames[key]}`;
+    if (value.startsWith('/')) {
+      return value.substring(1);
     }
-    return key;
+    if (value.includes('assets/images/')) {
+      return value.replace('assets/images/', `${base}/`);
+    }
+    if (imageNames[value]) {
+      return `${base}/${imageNames[value]}`;
+    }
+    return `${base}/${value}`;
   }
   function routeHref(to) {
     const page = String(to || "").replace("/", "") || "home";
@@ -327,6 +334,36 @@
           ${items}
         </div>
       </div>
+    `;
+  }
+
+  function sustainStats(strings) {
+    const stats = strings.sustainStats || translations.en.sustainStats || [];
+    const statIcons = ["recycle", "factory", "leaf", "sprout"];
+    const cards = stats
+      .map(
+        (stat, index) => `
+          <div data-motion style="${motionStyle(24, 0.65, index * 0.08)}" class="sustain-item">
+            <div class="sustain-icon" aria-hidden="true">
+              ${icon(statIcons[index] || "leaf", "w-7 h-7")}
+            </div>
+            <div class="sustain-text">
+              <div class="sustain-value">${escapeHtml(stat.value)}</div>
+              <div class="sustain-desc">${escapeHtml(stat.label)}</div>
+            </div>
+          </div>
+        `,
+      )
+      .join("");
+
+    return `
+      <section class="sustain-section bg-[var(--cream)]">
+        <div class="container mx-auto px-6 max-w-7xl">
+          <div class="sustain-container" role="list" aria-label="${escapeHtml(strings.sustainStatsLabel || "Sustainability metrics")}">
+            ${cards}
+          </div>
+        </div>
+      </section>
     `;
   }
 
@@ -488,27 +525,21 @@
     const cards = strings.products.products
       .map(
         (product, index) => `
-          <a href="${productHref(product.id)}" data-motion style="${motionStyle(50, 0.7, index * 0.1)}" class="product-card group relative rounded-3xl bg-white border border-[var(--forest)]/10 shadow-sm p-4 flex flex-col hover:shadow-md transition-shadow duration-300 overflow-hidden no-underline">
-            <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--bone)]">
-              <img src="${assetUrl(product.img)}" alt="${escapeHtml(product.title)}" loading="lazy" class="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110" />
-            </div>
-            <div class="pt-6 pb-2 px-2 flex-1 flex items-end justify-between gap-4">
-              <div class="flex-1">
-                <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--forest)]/50 mb-2 block">
-                  ${escapeHtml(product.tag)}
-                </span>
-                <h3 class="display text-2xl text-[var(--forest-deep)]">
-                  ${escapeHtml(product.title)}
-                </h3>
-                <p class="mt-2 text-sm text-[var(--forest)]/65 leading-relaxed">
-                  ${escapeHtml(product.desc)}
-                </p>
+          
+            <a href="${productHref(product.id)}" data-motion style="${motionStyle(50, 0.7, index * 0.1)}" class="product-card group relative rounded-3xl bg-white border border-[var(--forest)]/10 shadow-[0_6px_24px_rgba(0,0,0,0.08)] p-4 flex flex-col hover:shadow-md transition-shadow duration-300 overflow-hidden no-underline">
+              <img src="${assetUrl('design.png')}" alt="design" class="absolute -top-5 -left-5 w-20 h-20 object-cover pointer-events-none" />
+              <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--bone)] flex items-center justify-center">
+                <img src="${assetUrl(product.img)}" alt="${escapeHtml(product.title)}" loading="lazy" class="max-h-44 w-auto object-contain transition-transform duration-[900ms] group-hover:scale-105" />
               </div>
-              <div class="w-12 h-12 shrink-0 rounded-full bg-[var(--forest-deep)] text-[var(--cream)] flex items-center justify-center group-hover:bg-[var(--forest)] transition-colors">
-                ${icon("arrowRight", "w-5 h-5")}
+              <div class="pt-6 pb-6 px-2 flex-1">
+                <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--forest)]/50 mb-2 block">${escapeHtml(product.tag)}</span>
+                <h3 class="display text-2xl text-[var(--forest-deep)] mb-2">${escapeHtml(product.title)}</h3>
+                <p class="mt-0 text-sm text-[var(--forest)]/65 leading-relaxed">${escapeHtml(product.desc)}</p>
               </div>
-            </div>
-          </a>
+              <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-[var(--forest-deep)] text-[var(--cream)] flex items-center justify-center shadow-md">
+                ${icon("arrowRight", "w-4 h-4")}
+              </button>
+            </a>
         `,
       )
       .join("");
@@ -663,17 +694,68 @@
   function footer(strings) {
     const copy = strings.footer.copy.replace("{year}", String(new Date().getFullYear()));
     return `
-      <footer class="bg-[var(--forest-deep)] text-[var(--cream)]/70 py-12">
-        <div class="container mx-auto px-6 max-w-7xl flex flex-wrap items-center justify-between gap-4 text-sm">
-          <div class="font-display text-2xl text-[var(--cream)]">
-            aqcha<span class="text-[var(--amber)]">.</span>
-          </div>
-          <p class="text-xs text-[var(--cream)]/50">
-            ${escapeHtml(copy)}
-          </p>
-          <div class="flex gap-5 text-xs uppercase tracking-[0.2em]">
-            <a href="#" class="hover:text-[var(--amber)] transition">${escapeHtml(strings.footer.instagram)}</a>
-            <a href="#" class="hover:text-[var(--amber)] transition">${escapeHtml(strings.footer.linkedin)}</a>
+      <footer class="custom-footer text-[var(--cream)] relative" style="padding: 3.5rem 0 2.5rem;">
+        <!-- Gold ornament border at TOP -->
+        <div class="custom-gold-border" style="background-image: url('${assetUrl('gold_border.png')}');"></div>
+        
+        <!-- Subtle corner ornament -->
+        <div class="absolute top-10 left-4 w-16 h-16 opacity-15 pointer-events-none custom-left-ornament" style="background-image: url('${assetUrl('design.png')}'); background-size: contain; background-repeat: no-repeat; transform: rotate(90deg);"></div>
+        
+        <!-- Peacock feather - bottom right -->
+        <img src="${assetUrl('peacock_feather.png')}" alt="decor" class="custom-peacock-feather" style="position:absolute; right:-20px; bottom:-10px; width:200px; max-width:30vw; opacity:0.85;" />
+
+        <div style="max-width:1100px; margin:0 auto; padding:0 2rem; position:relative; z-index:20;">
+          <div class="footer-columns">
+            
+            <!-- Brand & Tagline -->
+            <div class="footer-col footer-brand-col">
+              <div style="color:#53b27e; margin-bottom:0.5rem;">
+                ${icon("leaf", "w-9 h-9")}
+              </div>
+              <div style="font-family:var(--font-display,serif); font-size:1.8rem; letter-spacing:0.18em; color:var(--cream,#f5f0e8); text-transform:uppercase; font-weight:600;">AQCHA</div>
+              <p style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.2em; color:rgba(219,234,213,0.7); margin-top:0.25rem;">${escapeHtml(strings.footer.tagline)}</p>
+            </div>
+
+            <!-- Navigation Column -->
+            <div class="footer-col">
+              <h4>${escapeHtml(strings.footer.navigation)}</h4>
+              <ul>
+                <li><a href="${routeHref("/")}">${escapeHtml(currentLocale === 'ar' ? 'الرئيسية' : (currentLocale === 'fr' ? 'Accueil' : 'Home'))}</a></li>
+                <li><a href="${routeHref("/why")}">${escapeHtml(strings.footer.about)}</a></li>
+                <li><a href="${routeHref("/products")}">${escapeHtml(strings.nav.links[3]?.label || "Produits")}</a></li>
+                <li><a href="${routeHref("/impact")}">${escapeHtml(strings.nav.links[4]?.label || "Impact")}</a></li>
+              </ul>
+            </div>
+
+            <!-- Resources Column -->
+            <div class="footer-col">
+              <h4>${escapeHtml(strings.footer.ressources)}</h4>
+              <ul>
+                <li><a href="#">${escapeHtml(strings.footer.blog)}</a></li>
+                <li><a href="#">${escapeHtml(strings.footer.innovation)}</a></li>
+                <li><a href="#">${escapeHtml(strings.footer.documents)}</a></li>
+                <li><a href="#">${escapeHtml(strings.footer.faq)}</a></li>
+              </ul>
+            </div>
+
+            <!-- Contact & Social Column -->
+            <div class="footer-col">
+              <h4>${escapeHtml(strings.footer.contact)}</h4>
+              <ul>
+                <li><a href="mailto:info@aqcha.com" style="color:rgba(219,234,213,0.85); font-weight:500;">info@aqcha.com</a></li>
+                <li><span>+212 6 00 00 00 00</span></li>
+                <li><span>${escapeHtml(strings.footer.address)}</span></li>
+              </ul>
+              <!-- Social Icons -->
+              <div style="display:flex; gap:0.6rem; margin-top:1.2rem;">
+                <a href="#" class="social-circle" aria-label="LinkedIn">in</a>
+                <a href="#" class="social-circle" aria-label="Instagram">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </a>
+                <a href="#" class="social-circle" aria-label="Facebook">f</a>
+              </div>
+            </div>
+
           </div>
         </div>
       </footer>
@@ -698,7 +780,7 @@
 
     let content = "";
     if (page === "home") {
-      content = nav(strings) + hero(strings) + marquee(strings) + products(strings) + contact(strings) + footer(strings);
+      content = nav(strings) + hero(strings) + sustainStats(strings) + marquee(strings) + products(strings) + contact(strings) + footer(strings);
     } else if (page === "crisis") {
       content = nav(strings) + crisis(strings) + footer(strings);
     } else if (page === "revolution") {
@@ -904,26 +986,19 @@
   function renderProductCard(product, index) {
     const href = productHref(product.id);
     return `
-      <a href="${href}" data-motion style="${motionStyle(50, 0.7, index * 0.1)}" class="product-card group relative rounded-3xl bg-white border border-[var(--forest)]/10 shadow-sm p-4 flex flex-col overflow-hidden transition-all duration-300 will-change-transform no-underline">
-        <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--bone)]">
-          <img src="${assetUrl(product.img)}" alt="${escapeHtml(product.title)}" loading="lazy" class="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110" />
+      <a href="${href}" data-motion style="${motionStyle(50, 0.7, index * 0.1)}" class="product-card group relative rounded-3xl bg-white border border-[var(--forest)]/10 shadow-[0_6px_24px_rgba(0,0,0,0.08)] p-4 flex flex-col hover:shadow-md transition-shadow duration-300 overflow-hidden no-underline">
+        <img src="${assetUrl('design.png')}" alt="design" class="absolute -top-5 -left-5 w-20 h-20 object-cover pointer-events-none" />
+        <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--bone)] flex items-center justify-center">
+          <img src="${assetUrl(product.img)}" alt="${escapeHtml(product.title)}" loading="lazy" class="max-h-44 w-auto object-contain transition-transform duration-[900ms] group-hover:scale-105" />
         </div>
-        <div class="pt-6 pb-2 px-2 flex-1 flex items-end justify-between gap-4">
-          <div class="flex-1">
-            <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--forest)]/50 mb-2 block">
-              ${escapeHtml(product.tag || '')}
-            </span>
-            <h3 class="display text-2xl text-[var(--forest-deep)]">
-              ${escapeHtml(product.title || '')}
-            </h3>
-            <p class="mt-2 text-sm text-[var(--forest)]/65 leading-relaxed">
-              ${escapeHtml(product.desc || '')}
-            </p>
-          </div>
-          <div class="w-12 h-12 shrink-0 rounded-full bg-[var(--forest-deep)] text-[var(--cream)] flex items-center justify-center group-hover:bg-[var(--forest)] transition-colors">
-            ${icon("arrowRight", "w-5 h-5")}
-          </div>
+        <div class="pt-6 pb-6 px-2 flex-1">
+          <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--forest)]/50 mb-2 block">${escapeHtml(product.tag || '')}</span>
+          <h3 class="display text-2xl text-[var(--forest-deep)] mb-2">${escapeHtml(product.title || '')}</h3>
+          <p class="mt-0 text-sm text-[var(--forest)]/65 leading-relaxed">${escapeHtml(product.desc || '')}</p>
         </div>
+        <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-[var(--forest-deep)] text-[var(--cream)] flex items-center justify-center shadow-md">
+          ${icon("arrowRight", "w-4 h-4")}
+        </button>
       </a>
     `;
   }
@@ -1158,6 +1233,20 @@
                 ${escapeHtml(product.desc || '').replace(/\n/g, '<br>')}
               </p>
 
+              <!-- Cart Form controls -->
+              <div class="flex flex-col gap-6 py-6 border-y border-[var(--forest)]/10 mb-8">
+                <div class="flex flex-wrap items-center gap-4">
+                  <!-- Custom minus/plus qty picker -->
+                  <div class="flex items-center bg-[var(--bone)] rounded-2xl p-1.5 border border-[var(--forest)]/5 shadow-inner">
+                    <button id="qty-minus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" ${!available ? 'disabled' : ''}>&minus;</button>
+                    <input id="qty-input" type="text" value="1" readonly class="w-10 text-center bg-transparent border-none focus:outline-none font-semibold text-sm text-[var(--forest-deep)]" />
+                    <button id="qty-plus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" ${!available ? 'disabled' : ''}>+</button>
+                  </div>
+
+                  <!-- 'Add to cart' button removed per request -->
+                </div>
+              </div>
+
               ${available ? `
               <!-- Direct order form -->
               <div class="bg-[var(--bone)] border border-[var(--forest)]/10 rounded-3xl p-6 mb-8">
@@ -1172,11 +1261,11 @@
                     <textarea id="order-address" name="address" required rows="3" class="w-full rounded-2xl border border-[var(--forest)]/10 bg-white/90 px-4 py-3 text-sm text-[var(--forest-deep)] focus:border-[var(--forest-deep)] focus:outline-none" placeholder="Adresse de livraison"></textarea>
                   </div>
                   <div>
-                    <label for="order-phone" class="block text-sm font-medium text-[var(--forest-deep)] mb-2">Numéro de téléphone</label>
+                    <label for="order-phone" class="block text-sm font-medium text-[var(--forest-deep)] mb-2">Num&eacute;ro de t&eacute;l&eacute;phone</label>
                     <input id="order-phone" name="phone" type="tel" required class="w-full rounded-2xl border border-[var(--forest)]/10 bg-white/90 px-4 py-3 text-sm text-[var(--forest-deep)] focus:border-[var(--forest-deep)] focus:outline-none" placeholder="+212 6 12 34 56 78" />
                   </div>
                   <div class="space-y-3">
-                    <button id="product-order-button" type="button" class="w-full inline-flex items-center justify-center gap-2 bg-[#16A34A] text-[var(--cream)] rounded-2xl px-6 py-4 font-semibold transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">Commander</button>
+                    <button id="product-order-button" type="button" class="btn-order-green w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 font-semibold transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">Commander</button>
                     <div id="order-feedback" class="text-sm text-[var(--forest)]/80"></div>
                   </div>
                 </form>
@@ -1186,29 +1275,6 @@
                 <p class="text-sm text-red-700">Ce produit est en rupture de stock, commande impossible.</p>
               </div>
               `}
-
-              <!-- Cart Form controls -->
-              <div class="flex flex-col gap-6 py-6 border-y border-[var(--forest)]/10 mb-8">
-                <div class="flex flex-wrap items-center gap-4">
-                  <!-- Custom minus/plus qty picker -->
-                  <div class="flex items-center bg-[var(--bone)] rounded-2xl p-1.5 border border-[var(--forest)]/5 shadow-inner">
-                    <button id="qty-minus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" ${!available ? 'disabled' : ''}>−</button>
-                    <input id="qty-input" type="text" value="1" readonly class="w-10 text-center bg-transparent border-none focus:outline-none font-semibold text-sm text-[var(--forest-deep)]" />
-                    <button id="qty-plus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" ${!available ? 'disabled' : ''}>+</button>
-                  </div>
-
-                  <button id="add-to-cart-btn" class="flex-1 group inline-flex items-center justify-center gap-2 bg-[var(--forest-deep)] text-[var(--cream)] rounded-2xl px-6 py-4 font-semibold hover:bg-[var(--forest)] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none" ${!available ? 'disabled' : ''}>
-                    ${icon('mail', 'w-4 h-4 opacity-75')}
-                    ${escapeHtml(pd.addToCart)}
-                  </button>
-                </div>
-                
-                <button id="buy-now-btn" class="w-full inline-flex items-center justify-center gap-2 bg-[#FF7A00] text-[var(--cream)] rounded-2xl px-6 py-4 font-semibold hover:bg-[#E06B00] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none shadow-sm" ${!available ? 'disabled' : ''}>
-                  ${escapeHtml(pd.buyNow)}
-                  ${icon('arrowRight', 'w-4 h-4 group-hover:translate-x-0.5 transition-transform')}
-                </button>
-              </div>
-
               <!-- Sustainability fact highlights -->
               <div class="bg-white/40 border border-[var(--forest)]/5 rounded-3xl p-6 backdrop-blur shadow-sm">
                 <h4 class="text-xs uppercase tracking-[0.2em] text-[var(--forest-deep)]/60 font-semibold mb-4">${escapeHtml(pd.sustainability)}</h4>
@@ -1287,18 +1353,6 @@
     });
 
     // Cart actions
-    const addBtn = document.getElementById('add-to-cart-btn');
-    const buyBtn = document.getElementById('buy-now-btn');
-    if (addBtn) addBtn.addEventListener('click', async () => {
-      const qty = parseInt(document.getElementById('qty-input').value || '1', 10);
-      await cartAdd(product.id, qty);
-      alert('Added to cart');
-    });
-    if (buyBtn) buyBtn.addEventListener('click', async () => {
-      const qty = parseInt(document.getElementById('qty-input').value || '1', 10);
-      await cartAdd(product.id, qty);
-      window.location.href = siteUrl('checkout.php');
-    });
 
     const orderForm = document.getElementById('product-order-form');
     const orderButton = document.getElementById('product-order-button');

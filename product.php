@@ -70,6 +70,16 @@ $translations = [
         'footer_copy' => '© ' . date('Y') . ' AQCHA · Designed in Morocco for the planet.',
         'instagram' => 'Instagram',
         'linkedin' => 'LinkedIn',
+        'footer_tagline' => 'Sustainable by nature',
+        'footer_navigation' => 'Navigation',
+        'footer_ressources' => 'Resources',
+        'footer_contact' => 'Contact',
+        'footer_about' => 'About Us',
+        'footer_blog' => 'Blog',
+        'footer_innovation' => 'Innovation',
+        'footer_documents' => 'Documents',
+        'footer_faq' => 'FAQ',
+        'footer_address' => 'Casablanca, Morocco',
     ],
     'fr' => [
         'brand' => 'Aqcha.',
@@ -96,6 +106,16 @@ $translations = [
         'footer_copy' => '© ' . date('Y') . ' AQCHA · Conçu au Maroc pour la planète.',
         'instagram' => 'Instagram',
         'linkedin' => 'LinkedIn',
+        'footer_tagline' => 'Durable par nature',
+        'footer_navigation' => 'Navigation',
+        'footer_ressources' => 'Ressources',
+        'footer_contact' => 'Contact',
+        'footer_about' => 'À propos',
+        'footer_blog' => 'Blog',
+        'footer_innovation' => 'Innovation',
+        'footer_documents' => 'Documents',
+        'footer_faq' => 'FAQ',
+        'footer_address' => 'Casablanca, Maroc',
     ],
     'ar' => [
         'brand' => 'Aqcha.',
@@ -122,6 +142,16 @@ $translations = [
         'footer_copy' => '© ' . date('Y') . ' AQCHA · مصمم في المغرب من أجل الكوكب.',
         'instagram' => 'إنستاجرام',
         'linkedin' => 'لينكدإن',
+        'footer_tagline' => 'مستدام بطبيعته',
+        'footer_navigation' => 'الملاحة',
+        'footer_ressources' => 'الموارد',
+        'footer_contact' => 'الاتصال',
+        'footer_about' => 'حولنا',
+        'footer_blog' => 'المدونة',
+        'footer_innovation' => 'الابتكار',
+        'footer_documents' => 'الوثائق',
+        'footer_faq' => 'الأسئلة الشائعة',
+        'footer_address' => 'الدار البيضاء، المغرب',
     ]
 ];
 
@@ -257,6 +287,19 @@ if ($locale === 'fr') {
                 <?php echo nl2br(htmlspecialchars($product['desc'] ?: '')); ?>
               </p>
 
+              <!-- Cart Form controls -->
+              <div class="flex flex-col gap-6 py-6 border-y border-[var(--forest)]/10 mb-8">
+                <div class="flex flex-wrap items-center gap-4">
+                  <!-- Custom minus/plus qty picker -->
+                  <div class="flex items-center bg-[var(--bone)] rounded-2xl p-1.5 border border-[var(--forest)]/5 shadow-inner">
+                    <button id="qty-minus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" <?php echo !$available ? 'disabled' : ''; ?>>&minus;</button>
+                    <input id="qty-input" type="text" value="1" readonly class="w-10 text-center bg-transparent border-none focus:outline-none font-semibold text-sm text-[var(--forest-deep)]" />
+                    <button id="qty-plus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" <?php echo !$available ? 'disabled' : ''; ?>>+</button>
+                  </div>
+
+                </div>
+              </div>
+
               <?php if ($available): ?>
               <!-- Direct order form -->
               <div class="bg-[var(--bone)] border border-[var(--forest)]/10 rounded-3xl p-6 mb-8">
@@ -271,11 +314,11 @@ if ($locale === 'fr') {
                     <textarea id="order-address" name="address" required rows="3" class="w-full rounded-2xl border border-[var(--forest)]/10 bg-white/90 px-4 py-3 text-sm text-[var(--forest-deep)] focus:border-[var(--forest-deep)] focus:outline-none" placeholder="Adresse de livraison"></textarea>
                   </div>
                   <div>
-                    <label for="order-phone" class="block text-sm font-medium text-[var(--forest-deep)] mb-2">Numéro de téléphone</label>
+                    <label for="order-phone" class="block text-sm font-medium text-[var(--forest-deep)] mb-2">Num&eacute;ro de t&eacute;l&eacute;phone</label>
                     <input id="order-phone" name="phone" type="tel" required class="w-full rounded-2xl border border-[var(--forest)]/10 bg-white/90 px-4 py-3 text-sm text-[var(--forest-deep)] focus:border-[var(--forest-deep)] focus:outline-none" placeholder="+212 6 12 34 56 78" />
                   </div>
                   <div class="space-y-3">
-                    <button id="product-order-button" type="button" class="w-full inline-flex items-center justify-center gap-2 bg-[#16A34A] text-[var(--cream)] rounded-2xl px-6 py-4 font-semibold transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">Commander</button>
+                    <button id="product-order-button" type="button" class="btn-order-green w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 font-semibold transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">Commander</button>
                     <div id="order-feedback" class="text-sm text-[var(--forest)]/80"></div>
                   </div>
                 </form>
@@ -285,29 +328,6 @@ if ($locale === 'fr') {
                 <p class="text-sm text-red-700">Produit en rupture de stock, commande impossible.</p>
               </div>
               <?php endif; ?>
-
-              <!-- Cart Form controls -->
-              <div class="flex flex-col gap-6 py-6 border-y border-[var(--forest)]/10 mb-8">
-                <div class="flex flex-wrap items-center gap-4">
-                  <!-- Custom minus/plus qty picker -->
-                  <div class="flex items-center bg-[var(--bone)] rounded-2xl p-1.5 border border-[var(--forest)]/5 shadow-inner">
-                    <button id="qty-minus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" <?php echo !$available ? 'disabled' : ''; ?>>−</button>
-                    <input id="qty-input" type="text" value="1" readonly class="w-10 text-center bg-transparent border-none focus:outline-none font-semibold text-sm text-[var(--forest-deep)]" />
-                    <button id="qty-plus" class="w-10 h-10 rounded-xl hover:bg-white/50 text-[var(--forest-deep)] flex items-center justify-center font-bold transition-all focus:outline-none" <?php echo !$available ? 'disabled' : ''; ?>>+</button>
-                  </div>
-
-                  <button id="add-to-cart-btn" class="flex-1 group inline-flex items-center justify-center gap-2 bg-[var(--forest-deep)] text-[var(--cream)] rounded-2xl px-6 py-4 font-semibold hover:bg-[var(--forest)] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none" <?php echo !$available ? 'disabled' : ''; ?>>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-75"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
-                    <?php echo htmlspecialchars($t['add_to_cart']); ?>
-                  </button>
-                </div>
-                
-                <button id="buy-now-btn" class="w-full inline-flex items-center justify-center gap-2 bg-[#FF7A00] text-[var(--cream)] rounded-2xl px-6 py-4 font-semibold hover:bg-[#E06B00] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none shadow-sm" <?php echo !$available ? 'disabled' : ''; ?>>
-                  <?php echo htmlspecialchars($t['buy_now']); ?>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                </button>
-              </div>
-
               <!-- Sustainability fact highlights -->
               <div class="bg-white/40 border border-[var(--forest)]/5 rounded-3xl p-6 backdrop-blur shadow-sm">
                 <h4 class="text-xs uppercase tracking-[0.2em] text-[var(--forest-deep)]/60 font-semibold mb-4"><?php echo htmlspecialchars($t['sustainability']); ?></h4>
@@ -346,26 +366,19 @@ if ($locale === 'fr') {
               <h3 class="display text-3xl text-[var(--forest-deep)] mb-8 font-medium"><?php echo htmlspecialchars($t['related_products']); ?></h3>
               <div id="related-grid" class="grid md:grid-cols-3 gap-6">
                 <?php foreach ($related as $r): ?>
-                  <a href="product.php?id=<?php echo $r['id']; ?>" class="product-card group relative rounded-3xl bg-white border border-[var(--forest)]/10 shadow-sm p-4 flex flex-col overflow-hidden transition-all duration-300 will-change-transform no-underline">
-                    <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--bone)]">
-                      <img src="<?php echo htmlspecialchars(ltrim($r['images'][0] ?? $r['img'], '/')); ?>" alt="<?php echo htmlspecialchars($r['title']); ?>" loading="lazy" class="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110" />
+                  <a href="product.php?id=<?php echo $r['id']; ?>" class="product-card group relative rounded-3xl bg-white border border-[var(--forest)]/10 shadow-[0_6px_24px_rgba(0,0,0,0.08)] p-4 flex flex-col hover:shadow-md transition-shadow duration-300 overflow-hidden no-underline">
+                    <img src="assets/images/design.png" alt="design" class="absolute -top-5 -left-5 w-20 h-20 object-cover pointer-events-none" />
+                    <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--bone)] flex items-center justify-center">
+                      <img src="<?php echo htmlspecialchars(ltrim($r['images'][0] ?? $r['img'], '/')); ?>" alt="<?php echo htmlspecialchars($r['title']); ?>" loading="lazy" class="max-h-44 w-auto object-contain transition-transform duration-[900ms] group-hover:scale-105" />
                     </div>
-                    <div class="pt-6 pb-2 px-2 flex-1 flex items-end justify-between gap-4">
-                      <div class="flex-1">
-                        <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--forest)]/50 mb-2 block">
-                          <?php echo htmlspecialchars($r['tag'] ?: ''); ?>
-                        </span>
-                        <h3 class="display text-2xl text-[var(--forest-deep)]">
-                          <?php echo htmlspecialchars($r['title'] ?: ''); ?>
-                        </h3>
-                        <p class="mt-2 text-sm text-[var(--forest)]/65 leading-relaxed">
-                          <?php echo htmlspecialchars($r['desc'] ?: ''); ?>
-                        </p>
-                      </div>
-                      <div class="w-12 h-12 shrink-0 rounded-full bg-[var(--forest-deep)] text-[var(--cream)] flex items-center justify-center group-hover:bg-[var(--forest)] transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                      </div>
+                    <div class="pt-6 pb-6 px-2 flex-1">
+                      <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--forest)]/50 mb-2 block"><?php echo htmlspecialchars($r['tag'] ?: ''); ?></span>
+                      <h3 class="display text-2xl text-[var(--forest-deep)] mb-2"><?php echo htmlspecialchars($r['title'] ?: ''); ?></h3>
+                      <p class="mt-0 text-sm text-[var(--forest)]/65 leading-relaxed"><?php echo htmlspecialchars($r['desc'] ?: ''); ?></p>
                     </div>
+                    <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-[var(--forest-deep)] text-[var(--cream)] flex items-center justify-center shadow-md">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </button>
                   </a>
                 <?php endforeach; ?>
               </div>
@@ -377,17 +390,72 @@ if ($locale === 'fr') {
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[var(--forest-deep)] text-[var(--cream)]/70 py-12">
-      <div class="container mx-auto px-6 max-w-7xl flex flex-wrap items-center justify-between gap-4 text-sm">
-        <div class="font-display text-2xl text-[var(--cream)]">
-          aqcha<span class="text-[var(--amber)]">.</span>
-        </div>
-        <p class="text-xs text-[var(--cream)]/50">
-          <?php echo htmlspecialchars($t['footer_copy']); ?>
-        </p>
-        <div class="flex gap-5 text-xs uppercase tracking-[0.2em]">
-          <a href="#" class="hover:text-[var(--amber)] transition"><?php echo htmlspecialchars($t['instagram']); ?></a>
-          <a href="#" class="hover:text-[var(--amber)] transition"><?php echo htmlspecialchars($t['linkedin']); ?></a>
+    <footer class="custom-footer text-[var(--cream)] pt-16 pb-20 overflow-hidden">
+      <!-- Gold ornament pattern at bottom -->
+      <div class="custom-gold-border" style="background-image: url('assets/images/gold_border.png');"></div>
+      
+      <!-- Left corner decorative ornament -->
+      <div class="absolute bottom-0 left-0 w-24 h-24 opacity-25 pointer-events-none custom-left-ornament" style="background-image: url('assets/images/design.png'); background-size: contain; background-repeat: no-repeat; transform: rotate(90deg);"></div>
+      
+      <!-- Right corner peacock feather -->
+      <img src="assets/images/peacock_feather.png" alt="decor" class="absolute right-0 bottom-4 w-[180px] md:w-[240px] opacity-90 pointer-events-none z-10 custom-peacock-feather" />
+
+      <div class="container mx-auto px-6 max-w-7xl relative z-20">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+          
+          <!-- Brand & Tagline -->
+          <div class="md:col-span-4 flex items-center justify-between md:justify-start gap-6 border-b md:border-b-0 md:border-r border-white/10 pb-6 md:pb-0 pr-0 md:pr-8 h-full">
+            <div class="flex flex-col items-center md:items-start text-center md:text-left w-full">
+              <!-- Leaf logo -->
+              <div class="mb-3 text-[#53b27e]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+              </div>
+              <div class="font-display text-3xl tracking-widest text-[var(--cream)] uppercase font-semibold">AQCHA</div>
+              <p class="mt-2 text-xs uppercase tracking-[0.2em] text-[#dbead5] opacity-80"><?php echo htmlspecialchars($t['footer_tagline']); ?></p>
+            </div>
+          </div>
+
+          <!-- Navigation Column -->
+          <div class="md:col-span-2">
+            <h4 class="text-white font-bold text-sm tracking-wider uppercase mb-4"><?php echo htmlspecialchars($t['footer_navigation']); ?></h4>
+            <ul class="space-y-2.5 text-sm">
+              <li><a href="index.php" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($locale === 'ar' ? 'الرئيسية' : ($locale === 'fr' ? 'Accueil' : 'Home')); ?></a></li>
+              <li><a href="pages/why.php" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($t['footer_about']); ?></a></li>
+              <li><a href="pages/products.php" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($locale === 'ar' ? 'المنتجات' : ($locale === 'fr' ? 'Produits' : 'Products')); ?></a></li>
+              <li><a href="pages/impact.php" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($locale === 'ar' ? 'الأثر' : ($locale === 'fr' ? 'Impact' : 'Impact')); ?></a></li>
+              <li><a href="pages/contact.php" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($locale === 'ar' ? 'اتصل بنا' : 'Contact'); ?></a></li>
+            </ul>
+          </div>
+
+          <!-- Resources Column -->
+          <div class="md:col-span-2">
+            <h4 class="text-white font-bold text-sm tracking-wider uppercase mb-4"><?php echo htmlspecialchars($t['footer_ressources']); ?></h4>
+            <ul class="space-y-2.5 text-sm">
+              <li><a href="#" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($t['footer_blog']); ?></a></li>
+              <li><a href="#" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($t['footer_innovation']); ?></a></li>
+              <li><a href="#" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($t['footer_documents']); ?></a></li>
+              <li><a href="#" class="text-[var(--cream)]/70 hover:text-[var(--amber)] transition-colors"><?php echo htmlspecialchars($t['footer_faq']); ?></a></li>
+            </ul>
+          </div>
+
+          <!-- Contact & Social Column -->
+          <div class="md:col-span-4 text-sm">
+            <h4 class="text-white font-bold text-sm tracking-wider uppercase mb-4"><?php echo htmlspecialchars($t['footer_contact']); ?></h4>
+            <ul class="space-y-2.5">
+              <li class="text-[var(--cream)]/85 font-medium"><a href="mailto:info@aqcha.com" class="hover:text-[var(--amber)] transition-colors">info@aqcha.com</a></li>
+              <li class="text-[var(--cream)]/70">+212 6 00 00 00 00</li>
+              <li class="text-[var(--cream)]/70"><?php echo htmlspecialchars($t['footer_address']); ?></li>
+            </ul>
+            <!-- Social Icons -->
+            <div class="flex gap-3 mt-6">
+              <a href="#" class="social-circle">in</a>
+              <a href="#" class="social-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+              <a href="#" class="social-circle">f</a>
+            </div>
+          </div>
+
         </div>
       </div>
     </footer>
