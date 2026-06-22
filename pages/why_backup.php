@@ -93,7 +93,7 @@
               <div class="why-carousel-container">
                   <?php foreach ($slides as $index => $slide): ?>
                       <div class="why-carousel-slide" data-index="<?= $index ?>">
-                          <img src="<?= htmlspecialchars($slide['image']) ?>" alt="<?= htmlspecialchars($slide['title']) ?>" onerror="this.onerror=null; this.src='https://placehold.co/600x400?text=Image+<?= $index+1 ?>'">
+                          <img src="<?= htmlspecialchars($slide['image']) ?>" alt="<?= htmlspecialchars($slide['title']) ?>" onerror="this.src='https://via.placeholder.com/600x400.jpeg?text=Image+<?= $index+1 ?>'">
                           <div class="why-card-content text-center">
                               <h5><?= htmlspecialchars($slide['title']) ?></h5>
                               <p><?= htmlspecialchars($slide['description']) ?></p>
